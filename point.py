@@ -10,6 +10,7 @@ class Point(object):
             self.y = float(y)
         else:
             return TypeError
+        self.is_joint = False   # Assist the line class in describing the change in line segments.
     def __getitem__(self, index: int) -> float:
         if isinstance(index, int):
             if index >= 0 or index <= 1:
