@@ -104,10 +104,3 @@ class Point(object):
             return x1 + y1
         else:
             return TypeError
-    
-    
-
-
-        
-       
-
