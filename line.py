@@ -3,49 +3,34 @@ from point import Point
 from typing import List
 from typing import Union
 
+class Node:
+    def __init__(self, data = None, _next = None):
+        self.data = data
+        self.next = _next
+    def __repr__(self):
+        return f"S({self.data}, {self.next})"
 
+class Line:
+    def __init__(self, start = None, end = None):
+        self.start = start
+        self.end = end
+        self._items = list(start, end)
 
-class Line(Point):
-    """ 
-    Represents a line that contains more than one Point object.
-    A slope is initialized from the start point and end point.
-    A Line can accept a point or containe a neighboring line.
-    A Line will containe points or other lines 
-    """
-    def __init__(self, points: Point = List[Point]) -> Line:
+    def __repr__(self):
+        return f"L({self.start}, {self.end})"
 
-        if isinstance(points, list) and is_point(points): # Contains a list of points
-            self._items = list()
-            for pnt in points:
-                self._items.append(pnt)
-        else:
-            raise TypeError
-    def __len__(self) -> int:
-        return len(self._items)
-    def __str__(self) -> str:
-        return str(self._items)
-    def __iter__(self):
-        return iter(self.items)
-    def __getitem__(self, index) -> Union(List[Point], Point):
-        return self._items(index)
-    def __setitem__(self, index, item) -> None:
-        if isinstance(item, Point) or isinstance(item, Line):
-            if isinstance(item, Line) and is_point(item):
-                self._items[index] = item
-            else:
-                raise TypeError
-        else:
-            self._items[index] = item
-         
-def is_point(points_list: List[Point], all_points=True) -> bool:
-    """Check container for Point objects"""
-    for _point in points_list:
-        if isinstance(_point, Line):
-            is_point(_point, all_points)
-        elif isinstance(_point, Point):
-            continue
-        else:
-            all_points = False
-            break
-    return all_points
-
+    def add(self, other):
+        if isinstance(other, Point):
+            slope_1 = self.start.slope(self.end)
+            slope_2 = self.end.slope(other)
+            if slope_1 == slope_2:
+                self._items.append(other)
+                self.end = other
+        elif isinstance(other, Line):
+            slope_1 = self.start.slope(self.end)
+            slope_2 = other.start.slope(other.end)
+            if slope_1 == slope_2:
+                for pnt in other._items:
+                    if pnt != other.start:
+                        self._items.append(pnt)
+    
