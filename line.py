@@ -1,9 +1,6 @@
 from __future__ import  annotations # Define Error
 from point import Point
-# from typing import List
 from typing import Union
-
-
 
 class Line:
     def __init__(self, start = None, end = None) -> Line:
@@ -22,7 +19,6 @@ class Line:
         #         self.end = end
         #     else:
         #         raise ValueError        # At a later date, The intent is to return a Line Segement object and not a ValueError.
-
     def __repr__(self):
         return f"L{self.start}, {self.end}"
     def __len__(self):
@@ -32,8 +28,7 @@ class Line:
     def __getitem__(self, index):
         return self.items[index]
     def __setitem__(self, index, item):
-        self._items[index] = item
-    
+        self._items[index] = item 
     @property
     def line_slope(self) -> float:
         return self.start.slope(self.end)
@@ -55,7 +50,8 @@ class Line:
     
     def add(self, point: Union[Point, float], p: int = 3) -> None: # Add a precision <p> tp the function
         if isinstance(point, Point):
-            if format(self.line_slope , f'.{p}f') == format(self.end.slope(point), f'.{p}f'):
+            # if format(self.line_slope , f'.{p}f') == format(self.end.slope(point), f'.{p}f'): # may not need to do this..
+            if self.line_slope == self.end.slope(point):
                 self._items.append(point)
                 self.end = point
             else:
@@ -70,8 +66,6 @@ class Line:
             self.add(Point(x_coor, y_coor))
         else:
             raise TypeError
-    
-   
 
 p1 = Point(1,2) 
 p2 = Point(2,3)
