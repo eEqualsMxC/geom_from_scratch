@@ -1,6 +1,6 @@
 from __future__ import  annotations # Define Error
-from scratch_mathmatics import power
-from scratch_mathmatics import factorial
+from algebra import power
+from algebra import factorial
 from typing import Union
 from constants import PI
 
