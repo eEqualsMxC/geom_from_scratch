@@ -101,7 +101,13 @@ class Point(object):
             x1 = m * self.x
             y1 = 0
             if self.y < 0: y1 = self.y * -1.0     
-            if self.y > 0: y1 = self.y
             return x1 + y1
         else:
             return TypeError
+    def midpoint(self, other) -> Point:
+        if isinstance(other, Point):
+            x_m = (self.x + other.x) / 2
+            y_m = (self.y + other.y) / 2
+            return Point(x_m, y_m)
+        else:
+            raise TypeError
