@@ -1,14 +1,26 @@
 from __future__ import  annotations # Define Error
 from scratch_mathmatics import power
 from scratch_mathmatics import factorial
-import math
-PI = 3.141592653589793
+from typing import Union
+from constants import PI
 
-def rad(d):
-    return d / 180 * PI
-def deg(r):
-    return r / PI * 180
-def sin_apx(theta, pp = 20, fp = 10) -> float:
+def degree_to_radian(deg: Union[float, int]) -> float:
+    """Convert Degrees Decimal to Radians on a Plane Angle"""
+    if isinstance(deg, int):
+        return float(deg) * (PI / 180.0)
+    elif isinstance(deg, float):
+        return deg * (PI / 180.0)
+    else:
+        raise TypeError
+def radian_to_degree(rad):
+    """Convert Radians to Degrees Decimal on a Plane Angle."""
+    if isinstance(rad, int):
+        return float(rad) * (180.0 * PI)
+    elif isinstance(rad, float):
+        return rad * (180.0 * PI)
+    else:
+        raise TypeError
+def sine(theta, pp = 20, fp = 10) -> float:
     """Approximate the sin with the taylor polnomial or a set number of terms."""
     theta = float((theta + PI) % (2 * PI)) - PI                         # Normalize theta so that it is found between -pi and pi.
     approx_value = 0                                                    # Final Approximation of sin
@@ -20,22 +32,12 @@ def sin_apx(theta, pp = 20, fp = 10) -> float:
         neggative *= -1
         expnt += 2
     return float(format(approx_value, f'.{fp}f'))
-def cos_apx(theta, precision = 20, fp = 10):
+def cossine(theta, precision = 20, fp = 10):
     """Approximate the cos(x)"""
-    return sin_apx(theta + (PI/2), precision, fp)
-def tan_apx(theta, precision = 20, fp = 10):
+    return sine(theta + (PI/2), precision, fp)
+def tangent(theta, precision = 20, fp = 10):
     """Approximate the sin(x)"""
-    return sin_apx(theta, precision, fp) / cos_apx(theta, precision, fp)
-
-
-
-
-
-            
-
-
-        
-
+    return sine(theta, precision, fp) / cossine(theta, precision, fp)
 
 # class Circle(Trig):
 #     """A class for a circle on a cartesian plane"""
