@@ -32,7 +32,7 @@ class Point(object):
     def __len__(self) -> int:
         return 2
     def __str__(self) -> str:
-        return f"({self.x}, {self.y})"
+        return f"Point({self.x}, {self.y})"
     def __eq__(self, other) -> bool:
         if isinstance(other, Point):
             return self.x == other.x and self.y == other.y

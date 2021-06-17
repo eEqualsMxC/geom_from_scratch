@@ -1,8 +1,14 @@
 from __future__ import  annotations # Define Error
 from point import Point
+from pre_calculus import sine
 from typing import Union
 
 class Line:
+    """
+    A line class that will have simliar characteristics as a Queue and Array Class.
+    The line class requires at least two Point objects and points are read left 
+    to right.
+    """
     def __init__(self, start = None, end = None) -> Line:
         if isinstance(start, Point) and isinstance(end, Point):
             self._items = list()
@@ -10,15 +16,6 @@ class Line:
             self._items.append(end)
             self.start = start
             self.end = end
-        # if isinstance(start, Line) and isinstance(end, Point):  
-        #     temp_slope_1 = start.slope
-        #     temp_slope_2 = start.end.slope(end)
-
-        #     if temp_slope_1 == temp_slope_2:
-        #         start._items.append(end)
-        #         self.end = end
-        #     else:
-        #         raise ValueError        # At a later date, The intent is to return a Line Segement object and not a ValueError.
     def __repr__(self):
         return f"L{self.start}, {self.end}"
     def __len__(self):
@@ -42,90 +39,97 @@ class Line:
     def y_intercept(self) -> float:
         return self.start.y_intercept(self.end)
     @property
+    def third_point(self) -> float:
+        return Point(self.end.x, self.start.y)
+    @property
     def rise(self) -> float:
         return self.end.y - self.start.y
     @property
     def run(self) -> float:
         return self.end.x - self.start.x
+    @property
+    def get_points(self) -> list:
+        """Return all coordinates as tuple"""
+        # temp = [Point(pnt.x, pnt.y) for pnt in self._items[:]]
+        return iter(self._items)
     
-    def add(self, point: Union[Point, float], p: int = 3) -> None: # Add a precision <p> tp the function
-        if isinstance(point, Point):
-            # if format(self.line_slope , f'.{p}f') == format(self.end.slope(point), f'.{p}f'): # may not need to do this..
-            if self.line_slope == self.end.slope(point):
-                self._items.append(point)
-                self.end = point
-            else:
-                raise ValueError
-        elif isinstance(point, float):                  # Come back and test nums {<=0}
-            sin_theta = self.rise / self.length         # Get the ratio of Sin(theta) in a right triangle
-            c = self.length + point
-            a = sin_theta * c
-            b = ((c) ** 2 - (a) ** 2) ** 0.5
-            x_coor = self.run + b
-            y_coor = self.rise + a
-            self.add(Point(x_coor, y_coor))
+    def slope_precision(self, other: Union[Line,Point], precision: float = 0.0001 ) -> bool:
+        """
+        Returns True or False if the slope of two lines are with in float precision
+        or if a point exists in the slope of a line.
+        The default precision is a float value with in 0.0001  
+        """
+        if isinstance(other, Line):
+            slope_1, slope_2 = self.line_slope, other.line_slope
+            return precision > (slope_1 - slope_2)
+        elif isinstance(other, Point):
+            slope_1, slope_2 = self.line_slope, self.end.slope(other)
+            return precision > (slope_1 - slope_2)
         else:
-            raise TypeError
+            return NotImplemented
 
-p1 = Point(1,2) 
-p2 = Point(2,3)
-p3 = Point(3,4) 
-# p4 = Point(4,5) 
-# p5 = Point(5,6) 
-# p6 = Point(6,7)
+    def add(self, other: Union[Point, float], precision: float = 0.001) -> None:
+        if isinstance(other, Point):
+            if self.slope_precision(other, precision):     # Default precion of slopes is caculated to 10000's decimal place
+                self._items.append(other)
+                self.end = other
+            else:
+                return -1                                   # If not in the same slope, then return a new class object as a Line Segment.
+        if isinstance(other, int):
+            other = float(other)
+        elif isinstance(other, float):
+            op1 = self.end.distance(self.third_point)       # Calculate sin(theta) = Oposite / Hypotnuse
+            hp_1 = self.length                              # as a rate of change when calculating the length
+            soh_1 = op1 / hp_1                              # of new opposite leg.
+            hp_2 = hp_1 + other                         
+
+            op_2 = soh_1 * hp_2                             # Using pathagorem, calculate the adjacent leg 
+            adj_2 = (((hp_2 ** 2) - (op_2 ** 2))) ** 0.5    # as c^2 - b^2 = a^2
+
+            x_coor = self.start.x + adj_2                   # From the starting point, add the lengths of the 
+            y_coor = self.start.y + op_2                    # new legs inorder to calculate the new point
+            point_location = Point(x_coor, y_coor)
+
+            self.add(point_location)
+        elif isinstance(other, Line):                       # Add two lines togther will return a line with # Greater distance or a new line segment object. 
+            if other.start != self.end:
+                if self.slope_precision(other):
+                    for pnt in other._items:
+                        self._items.append(pnt)
+                        self.end = other.end
+                else:
+                    pass                                   # Return a Line segment object
+            elif other.start == self.end:
+                if self.slope_precision(other):
+                    for pnt in other._items[1:]:
+                        self._items.append(pnt)
+                        self.end = other.end
+
+                else:                                      # Return a Line segment object
+                    pass                                   
+            else:
+                return NotImplemented
+        else:
+            raise TypeError                                # Object is not a point or line.
 
 
-td = 2.8284271247461903
-l1 = Line(p1, p2)
-l1.add(td,3)
 
-print(l1)
+a = Point(1,2)
+b = Point(2,3)
+c = Point(3,4)
+d = Point(4,5)
+e = Point(5,6)
+f = Point(6,7)
 
-# print((1/l1.length) * (l1.length+td))
+l1 = Line(a, b)
+
+l2 = Line(d, f)
 
 
-    # def add(self, other):
-    #     if isinstance(other, Point):
-    #         slope_1 = self.start.slope(self.end)
-    #         slope_2 = self.end.slope(other)
-    #         if slope_1 == slope_2:
-    #             self._items.append(other)
-    #             self.end = other
-    #     elif isinstance(other, Line):
-    #         slope_1 = self.start.slope(self.end)
-    #         slope_2 = other.start.slope(other.end)
-    #         if slope_1 == slope_2:
-    #             for pnt in other._items:
-    #                 if pnt != other.start:
-    #                     self._items.append(pnt)
+l1.add(l2)
 
-# class Node:
-#     def __init__(self, data = None, _next = None):
-#         self.data = data
-#         self.next = _next
-#     def __repr__(self):
-#         return f"S({self.data}, {self.next})"
+for p in l1:
+    print(p)
 
-# class Line:
-#     def __init__(self, start = None, end = None):
-#         self.start = start
-#         self.end = end
-#         self._items = list(start, end)
+print(l1.length)
 
-#     def __repr__(self):
-#         return f"L({self.start}, {self.end})"
-
-#     def add(self, other):
-#         if isinstance(other, Point):
-#             slope_1 = self.start.slope(self.end)
-#             slope_2 = self.end.slope(other)
-#             if slope_1 == slope_2:
-#                 self._items.append(other)
-#                 self.end = other
-#         elif isinstance(other, Line):
-#             slope_1 = self.start.slope(self.end)
-#             slope_2 = other.start.slope(other.end)
-#             if slope_1 == slope_2:
-#                 for pnt in other._items:
-#                     if pnt != other.start:
-#                         self._items.append(pnt)
