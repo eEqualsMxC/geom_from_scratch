@@ -2,6 +2,51 @@ from __future__ import  annotations # Define Error
 from point import Point
 from pre_calculus import sine
 from typing import Union
+from typing import List
+
+
+class Joint:
+    """
+    A Joint object is similar describes a line object when it's
+    slope changes.
+                
+                   | < -- Line A
+                   |
+                   |
+                   0 <--Joint of Lines A, B, C             
+                 /   \   
+                /     \  <--   Line C
+    Line B --> /       \       
+              /         \     / <-- Line D    
+                         \   /
+                          \ /         
+    Joint of Lines C, D--> 0 --------------  <--Line E
+    
+    A joint can be connected to infinite lines,
+    but a can not loop to itself.
+    Therfore, Joint(A, B, C, D) is valid.
+    When Joint(A, B, C, D, A) is init, the Shape class __init__'s 
+    with inheritance of the Point and Line Classes.
+
+    Joint objects are indexed by their start or ending points 
+    of a line. Joint[A.start, B.start, C.start, D.start, E.start] 
+    The returned joint class is sorted into a k-d tree.  
+    """
+    def __init__(self, lines: List[Line]) --> List[Joint]:
+        self._items_joints = list()
+        self.lines = lines
+        pass
+
+    def __repr__(self):
+        return f"L{self.start}, {self.end}"
+    def __len__(self):
+        return len(self._items)
+    def __iter__(self):
+        return iter(self._items)
+    def __getitem__(self, index):
+        return self.items[index]
+    def __setitem__(self, index, item):
+        self._items[index] = item 
 
 class Line:
     """
@@ -78,11 +123,8 @@ class Line:
         if isinstance(other, int):
             other = float(other)
         elif isinstance(other, float):
-            op1 = self.end.distance(self.third_point)       # Calculate sin(theta) = Oposite / Hypotnuse
-            hp_1 = self.length                              # as a rate of change when calculating the length
-            soh_1 = op1 / hp_1                              # of new opposite leg.
+            soh_1 = self.end.distance(self.third_point) / self.length                          
             hp_2 = hp_1 + other                         
-
             op_2 = soh_1 * hp_2                             # Using pathagorem, calculate the adjacent leg 
             adj_2 = (((hp_2 ** 2) - (op_2 ** 2))) ** 0.5    # as c^2 - b^2 = a^2
 
@@ -112,24 +154,4 @@ class Line:
         else:
             raise TypeError                                # Object is not a point or line.
 
-
-
-a = Point(1,2)
-b = Point(2,3)
-c = Point(3,4)
-d = Point(4,5)
-e = Point(5,6)
-f = Point(6,7)
-
-l1 = Line(a, b)
-
-l2 = Line(d, f)
-
-
-l1.add(l2)
-
-for p in l1:
-    print(p)
-
-print(l1.length)
 
